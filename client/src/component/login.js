@@ -26,16 +26,12 @@ function LogIn() {
         event.preventDefault();
         try {
             const response = await login(formData, dispatch);
-            console.log("response in login " + response);
-            if (response) {
+            console.log("flag in login " + response[0]?.flag);
+            console.log("response in login " + JSON.stringify(response));
+            if (response[0]?.flag) {
                 toast.success("SuccessFull Login")
                 navigate("/chat")
             }
-            // if (response.status === 200) {
-            //     // localStorage.setItem("user", response?.data);
-            //     // window.location.href = "/";
-            //     toast.success("SuccessFull Login")
-            // }
         }
         catch (e) {
             console.log(e);
@@ -48,7 +44,7 @@ function LogIn() {
         <div className='container'>
             <div className='main'>
                 <form onSubmit={submitHandler}
-                    class="form">
+                    className="form">
                     <p className="title">SignIn </p>
                     <p className="message">Login now and get full access to our app. </p>
                     <label>
@@ -68,7 +64,8 @@ function LogIn() {
                             type="password" className="input" />
                         <span>Password</span>
                     </label>
-                    <p className="signin"> Forgot Password? <Link to="">Click Here</Link> </p>
+                    <p className="signin"> Forgot Password? <Link to="/forgot-password">Click Here</Link> </p>
+                    <p className="signin"> Dont't have an account? <Link to="/signup">Click Here</Link> </p>
                     <button type='submit'
                         className="submit">Submit</button>
                 </form>

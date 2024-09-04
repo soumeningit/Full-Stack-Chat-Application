@@ -12,7 +12,20 @@ const messageSchema = new mongoose.Schema({
     chat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat"
-    }
+    },
+    media: [{
+        url: {
+            type: String,
+            trim: true,
+            default: "",
+
+        },
+        format: {
+            type: String,
+            trim: true
+
+        }
+    }]
 }, { timestamps: true })
 
 module.exports = mongoose.model("Message", messageSchema)

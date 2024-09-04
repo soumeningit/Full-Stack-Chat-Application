@@ -4,12 +4,16 @@ import { useSelector } from "react-redux";
 import { getChat } from "../../Service/Operation/ChatAPI";
 import CreateGroupModal from "./CreateGroupModal";
 import { useDisclosure } from "@chakra-ui/react";
-import { getSender } from "../../utils/GetSender";
+import { getProfile, getSender } from "../../utils/GetSender";
+import { setView } from "../../redux/Slices/ProfileSlice";
+import { FaSearch } from "react-icons/fa";
+
 import {
   setSearchResults,
   setSelectedChat,
 } from "../../redux/Slices/ProfileSlice";
 import { useDispatch } from "react-redux";
+import ProfileImage from "../ProfileImage";
 
 function MyChat() {
   const { token } = useSelector((state) => state.auth);
@@ -19,6 +23,13 @@ function MyChat() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.profile);
   console.log("user : ", user);
+
+  // const dispatch = useDispatch();
+  const isDrawerOpen = useSelector((state) => state.profile.view);
+
+  const handleSearchClick = () => {
+    dispatch(setView(true));
+  };
 
   async function getAllChat() {
     try {
@@ -43,18 +54,36 @@ function MyChat() {
     getAllChat();
   }, []);
 
+  console.log("searchResults in MyChat : ", searchResults);
+
   return (
-    <div className="bg-[#ffffffec] relative flex flex-col">
-      <div>
+    <div className="bg-[#ffffffec] w-1/3 h-full flex flex-col p-4">
+      <div className="flex flex-row justify-end">
+        <div className="flex items-center">
+          <button
+            onClick={handleSearchClick}
+            className="p-2 bg-blue-500 text-white rounded-md"
+          >
+            <FaSearch />
+          </button>
+          <p>Search User Here</p>
+        </div>
+
+        <div className="flex items-center">
+          <ProfileImage />
+        </div>
+      </div>
+
+      <div className="relative">
         <button
           onClick={onOpen}
-          className="inline-flex items-center px-4 py-2 mt-2 rounded-md bg-slate-50 absolute right-4 top-4"
+          className="items-center flex flex-row px-4 py-2 rounded-md bg-slate-50 absolute right-0 top-0 mt-2"
         >
           <IoAddCircleOutline className="mr-2 text-xl font-semibold" />
           <span className="text-lg">Create Group</span>
         </button>
       </div>
-      <div className="mt-16 gap-y-4">
+      <div className="mt-16 flex flex-col gap-y-4">
         {searchResults.length > 0 ? (
           searchResults.map((chat) => (
             <div
@@ -63,7 +92,8 @@ function MyChat() {
               onClick={() => handleChatClick(chat)}
             >
               <img
-                src={chat.users[0]?.image || ""}
+                // onClick={imageClick}
+                src={getProfile(user, chat.users)}
                 alt={chat.chatName}
                 className="rounded-full w-10 h-10"
               />
@@ -74,7 +104,7 @@ function MyChat() {
                     : getSender(user, chat.users)}
                 </div>
                 <div className="text-gray-500">
-                  {chat.users.map((user) => user.firstName).join(", ")}
+                  {chat.lastMessage?.content ? chat.lastMessage.content : ""}
                 </div>
               </div>
             </div>

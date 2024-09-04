@@ -19,3 +19,14 @@ export const chatEndPoints = {
     REMOVE_FROM_GROUP_API: BASE_URL + "/chat/remove-from-group",
     SEARCH_TO_ADD_GROUP_API: BASE_URL + "/chat/search-for-create-group"
 }
+
+
+export const messageEndPoints = {
+    SEND_MESSAGE_API: BASE_URL + "/chat/message/send-message",
+    GET_MESSAGE_API: BASE_URL + "/chat/message/allMessages"
+}
+
+export const userEndPoints = {
+    UPDATE_USER_DETAILS: BASE_URL + "/chat/updateUser",
+    CONTACT_US_ENDPOINTS: BASE_URL + "/chat/contactUs"
+}

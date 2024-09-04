@@ -23,7 +23,13 @@ const userSchema = new mongoose.Schema({
     },
     image: {
         type: "String"
-    }
+    },
+    token: {
+        type: String,
+    },
+    resetTokenTime: {
+        type: Date,
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

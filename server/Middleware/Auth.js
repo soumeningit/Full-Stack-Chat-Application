@@ -14,7 +14,7 @@ exports.auth = async (req, res, next) => {
         const token = req.cookies?.token ||
             req.body?.token ||
             req.header("Authorization")?.replace("Bearer ", "");
-        console.log("Token ", token)
+        // console.log("Token ", token)
 
         // check if token is prsent or not
         if (!token) {
@@ -28,7 +28,7 @@ exports.auth = async (req, res, next) => {
         try {
             console.log("verifing token..")
             const verifiedToken = jwt.verify(token, process.env.JWT_PRIVATEKEY);
-            console.log("Verified Token ", verifiedToken);
+            // console.log("Verified Token ", verifiedToken);
             req.user = verifiedToken;
             next();
         } catch (error) {

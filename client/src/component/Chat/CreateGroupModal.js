@@ -1,106 +1,3 @@
-// import React from 'react'
-// import { useState } from 'react'
-// import toast from "react-hot-toast"
-// import {
-//     Modal,
-//     ModalOverlay,
-//     ModalContent,
-//     ModalHeader,
-//     ModalFooter,
-//     ModalBody,
-//     ModalCloseButton,
-// } from '@chakra-ui/react'
-
-// import { useDisclosure } from '@chakra-ui/react'
-// import { Button } from '@chakra-ui/react'
-// import { FormControl, FormLabel, Input } from '@chakra-ui/react'
-// import { useSelector } from 'react-redux'
-// import { findForCreategroup } from '../../Service/Operation/ChatAPI'
-
-// function CreateGroupModal({ isOpen, onClose }) {
-//     const { onOpen } = useDisclosure()
-
-//     const initialRef = React.useRef(null)
-//     const finalRef = React.useRef(null)
-
-//     const [search, setSearch] = useState("");
-
-//     const { token } = useSelector((state) => state.auth);
-//     const [searchResult, setSearchResult] = useState([]);
-//     const [loading, setLoading] = useState(false);
-
-//     const handleSearch = async (query) => {
-//         console.log("query : ", query)
-//         setSearch(query);
-//         if (!query) {
-//             setSearchResult([]);
-//             return;
-//         }
-
-//         setLoading(true);
-//         try {
-//             const result = await findForCreategroup(query, token);
-//             console.log("result : ", result);
-//             setSearchResult(result.data);
-//         } catch (error) {
-//             console.log('Error in handleSearch:', error);
-//             toast({
-//                 title: 'Error Occurred!',
-//                 description: 'Failed to Load the Search Results',
-//                 status: 'error',
-//                 duration: 5000,
-//                 isClosable: true,
-//                 position: 'bottom-left',
-//             });
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-
-//     return (
-//         <>
-//             <Modal
-//                 initialFocusRef={initialRef}
-//                 finalFocusRef={finalRef}
-//                 isOpen={isOpen}
-//                 onClose={onClose}
-//             >
-//                 <ModalOverlay />
-//                 <ModalContent>
-//                     <ModalHeader>Create Group</ModalHeader>
-//                     <ModalCloseButton />
-//                     <ModalBody pb={6}>
-//                         <FormControl>
-//                             <FormLabel>Group name</FormLabel>
-//                             <Input ref={initialRef} placeholder='Group Name' />
-//                         </FormControl>
-
-//                         <FormControl mt={4}>
-//                             <FormLabel></FormLabel>
-//                             <Input ref={initialRef} placeholder="Add Users eg: John, Piyush, Jane"
-//                                 mb={1}
-//                                 value={search}
-//                                 onChange={(e) => handleSearch(e.target.value)}
-//                             />
-//                         </FormControl>
-
-//                     </ModalBody>
-
-//                     <ModalFooter>
-//                         <Button colorScheme='blue' mr={3}>
-//                             Save
-//                         </Button>
-//                         <Button onClick={onClose}>Cancel</Button>
-//                     </ModalFooter>
-//                 </ModalContent>
-//             </Modal>
-//         </>
-//     )
-// }
-
-// export default CreateGroupModal;/
-
 import React, { useState, useRef } from 'react';
 import toast from "react-hot-toast";
 import {
@@ -120,7 +17,10 @@ import {
     Text,
     Avatar,
     VStack,
+    HStack,
+    IconButton,
 } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
 import { useSelector } from 'react-redux';
 import { createGroup, findForCreategroup } from '../../Service/Operation/ChatAPI';
 
@@ -134,6 +34,7 @@ function CreateGroupModal({ isOpen, onClose }) {
     const [loading, setLoading] = useState(false);
     const [groupUser, setGroupUser] = useState([]);
     const [grName, setGrName] = useState("");
+    const [groupUsers, setGroupUsers] = useState([]);
 
     const handleSearch = async (query) => {
         console.log("query:", query);
@@ -156,10 +57,12 @@ function CreateGroupModal({ isOpen, onClose }) {
         }
     };
 
-    const handleSetGroup = (userId) => {
-        console.log("userId : ", userId)
-        groupUser.includes(userId) ? setGroupUser([...groupUser]) : setGroupUser([...groupUser, userId])
-        // setGroupUser([...groupUser, userId]);
+    const handleSetGroup = (user) => {
+        console.log("Clicked in add in group")
+        console.log("userId : ", user._id)
+        if (!groupUsers.some((u) => u._id === user._id)) {
+            setGroupUsers([...groupUsers, user]);
+        }
     }
 
     const handleChange = (e) => {
@@ -170,15 +73,15 @@ function CreateGroupModal({ isOpen, onClose }) {
     const handleCreateGroup = async () => {
         console.log("groupUser : ", groupUser)
         try {
-            const data = {}
-            data.name = grName;
-            const allUsers = JSON.stringify(groupUser)
-            console.log("allUsers in handleCreateGroup : ", allUsers)
-            data.users = allUsers;
+            const data = {
+                name: grName,
+                users: groupUsers.map((user) => user._id),
+            };
             console.log("Data : ", data);
             const result = await createGroup(data, token);
             console.log("result in handleCreateGroup:", result);
             setSearchResult(result?.data?.users);
+            onClose();
         } catch (error) {
             console.log('Error in handleSearch:', error);
             toast.error('Failed to Load the Search Results');
@@ -186,6 +89,11 @@ function CreateGroupModal({ isOpen, onClose }) {
             setLoading(false);
         }
     }
+
+    const handleRemoveGroupUser = (userId) => {
+        setGroupUsers(groupUsers.filter((user) => user._id !== userId));
+    };
+
 
     // console.log("Group User : ", JSON.stringify(groupUser));
 
@@ -210,10 +118,23 @@ function CreateGroupModal({ isOpen, onClose }) {
                         />
                     </FormControl>
 
+                    <Box mt={4}>
+                        {groupUsers.map((user) => (
+                            <HStack key={user._id} mb={2}>
+                                <Avatar src={user.image} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                                <Text>{user.firstName} {user.lastName}</Text>
+                                <IconButton
+                                    icon={<CloseIcon />}
+                                    size="xs"
+                                    onClick={() => handleRemoveGroupUser(user._id)}
+                                />
+                            </HStack>
+                        ))}
+                    </Box>
                     <FormControl mt={4}>
                         <FormLabel>Search Users</FormLabel>
                         <Input
-                            placeholder="Add Users eg: John, Piyush, Jane"
+                            placeholder="Add Users : Soumen , John"
                             mb={1}
                             value={search}
                             onChange={(e) => handleSearch(e.target.value)}
@@ -225,6 +146,7 @@ function CreateGroupModal({ isOpen, onClose }) {
                             <Spinner />
                         </Box>
                     ) : (
+                        // searching during creation of group
                         <VStack spacing={3} mt={4}>
                             {searchResult?.map((user) => (
                                 <Box
@@ -237,7 +159,7 @@ function CreateGroupModal({ isOpen, onClose }) {
                                     borderRadius="lg"
                                     cursor={'pointer'}
                                     onClick={() =>
-                                        handleSetGroup(user._id)
+                                        handleSetGroup(user)
                                     }
                                 >
                                     <Avatar src={user.image} name={`${user.firstName} ${user.lastName}`} />

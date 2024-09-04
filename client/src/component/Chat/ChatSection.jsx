@@ -1,94 +1,51 @@
-// // import React from "react";
-
-// // function ChatSection() {
-// //   return <div className="">ChatSection</div>;
-// // }
-
-// // export default ChatSection;
-// import React, { useState } from "react";
-// import ChatHeader from "./ChatHeader";
-// import ChatMessage from "./ChatMessage";
-// import ChatInput from "./ChatInput";
-
-// const dummyMessages = [
-//   { id: 1, text: "Hello!", time: "11:31", isSender: false },
-//   { id: 2, text: "Hi there!", time: "11:33", isSender: true },
-//   { id: 3, text: "How are you?", time: "11:35", isSender: false },
-//   { id: 4, text: "I am fine, thank you!", time: "11:36", isSender: true },
-// ];
-
-// const ChatSection = () => {
-//   const [messages, setMessages] = useState(dummyMessages);
-
-//   const handleSendMessage = (text) => {
-//     const newMessage = {
-//       id: messages.length + 1,
-//       text,
-//       time: new Date().toLocaleTimeString([], {
-//         hour: "2-digit",
-//         minute: "2-digit",
-//       }),
-//       isSender: true,
-//     };
-//     setMessages([...messages, newMessage]);
-//   };
-
-//   const user = {
-//     name: "Soumya Bppimt",
-//     image: "https://via.placeholder.com/150",
-//   };
-
-//   return (
-//     <div className="flex flex-col h-screen">
-//       <ChatHeader user={user} />
-//       <div className="flex-1 p-4 overflow-y-scroll">
-//         {messages.map((msg) => (
-//           <ChatMessage key={msg.id} message={msg} isSender={msg.isSender} />
-//         ))}
-//       </div>
-//       <ChatInput onSendMessage={handleSendMessage} />
-//     </div>
-//   );
-// };
-
-// export default ChatSection;
-
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import ChatHeader from "./ChatHeader";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import { getSender } from "../../utils/GetSender";
+import { getMessage, sendMessage } from "../../Service/Operation/MessageApi";
+import io from "socket.io-client";
+import "./ChatSection.css";
+import { setNotification } from "../../redux/Slices/ProfileSlice";
+
+const ENDPOINT = "http://localhost:4000";
+let socket;
 
 const ChatSection = () => {
   const { selectedChat } = useSelector((state) => state.profile);
   const [messages, setMessages] = useState([]);
   const [name, setName] = useState("");
-
-  console.log("selectedChat : ", selectedChat);
+  const { token } = useSelector((state) => state.auth);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [url, setUrl] = useState("");
+  const [file, setFile] = useState(null);
 
   const { user } = useSelector((state) => state.profile);
+  const { notification } = useSelector((state) => state.profile);
 
-  // useEffect(() => {
-  //   // if (selectedChat) {
-  //   //   // Fetch messages for the selected chat
-  //   //   // Example: const response = await fetchMessagesForChat(selectedChat._id);
-  //   //   const dummyMessages = [
-  //   //     { id: 1, text: "Hello!", time: "11:31", isSender: false },
-  //   //     { id: 2, text: "Hi there!", time: "11:33", isSender: true },
-  //   //     { id: 3, text: "How are you?", time: "11:35", isSender: false },
-  //   //     { id: 4, text: "I am fine, thank you!", time: "11:36", isSender: true },
-  //   //   ];
-  //   //   // name = getSender(user, selectedChat?.users);
-  //   //   // console.log("users : ", name);
-  //   //   // setName(name);
-  //   //   setMessages(dummyMessages);
-  //   // }
+  const fetchChat = async () => {
+    // console.log(
+    //   "selectedChat inside fetch chat function : " +
+    //     JSON.stringify(selectedChat)
+    // );
+    const data = { chatId: selectedChat?._id };
 
-  //   setName(getSender(user, selectedChat?.users));
-  //   console.log("users : ", name);
-  //   // setName(name);
-  // }, []);
+    try {
+      const chatResponse = await getMessage(data, token);
+      console.log("chatResponse : ", chatResponse);
+      setMessages(chatResponse);
+      socket.emit("join chat", selectedChat?._id);
+    } catch (error) {
+      console.error("Fetch Chat Failed", error);
+    }
+  };
+
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+  }, [user]);
 
   useEffect(() => {
     if (selectedChat) {
@@ -97,45 +54,119 @@ const ChatSection = () => {
       } else {
         setName(getSender(user, selectedChat.users));
       }
-      // setName(getSender(user, selectedChat.users));
-      // Fetch messages for the selected chat here if needed
-      // const fetchedMessages = await fetchMessagesForChat(selectedChat._id);
-      // setMessages(fetchedMessages);
+      fetchChat();
+      socket.emit("join chat", selectedChat?._id);
     }
   }, [selectedChat, user]);
 
-  const handleSendMessage = (text) => {
+  // useEffect(() => {
+  //   socket.on("message received", (newMessageReceived) => {
+  //     console.log("message in client side : ", newMessageReceived);
+  //     if (
+  //       !selectedChat ||
+  //       selectedChat?._id !== newMessageReceived?.chat?._id
+  //     ) {
+  //       // give notification
+  //     } else {
+  //       // setMessages((prevMessages) => [...prevMessages, newMessageReceived]);
+  //       // setMessages(...messages, newMessageReceived);
+  //       setMessages((prevMessages) =>
+  //         prevMessages
+  //           ? [...prevMessages, newMessageReceived]
+  //           : [newMessageReceived]
+  //       );
+  //     }
+  //   });
+  // });
+
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      if (
+        !selectedChat ||
+        selectedChat?._id !== newMessageReceived?.chat?._id
+      ) {
+        // give notification
+        if (!notification.includes(newMessageReceived)) {
+          setNotification([...notification, newMessageReceived]);
+        }
+      } else {
+        setMessages((prevMessages) =>
+          prevMessages
+            ? [...prevMessages, newMessageReceived]
+            : [newMessageReceived]
+        );
+      }
+    });
+  }, [selectedChat]);
+
+  const handleSendMessage = async (text) => {
     const newMessage = {
-      id: messages.length + 1,
       text,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isSender: true,
+      sender: { _id: user?._id },
+      chat: { _id: selectedChat?._id },
+      files: file,
+      // url,
     };
-    setMessages([...messages, newMessage]);
+    setMessages((prevMessages) =>
+      prevMessages ? [...prevMessages, newMessage] : [newMessage]
+    );
+    try {
+      const formData = new FormData();
+      formData.append("chatId", selectedChat?._id);
+      formData.append("message", text);
+      if (file) {
+        formData.append("file", file);
+      } else {
+        formData.append("file", null);
+      }
+      // formData.append("file", file);
+      // const data = {
+      //   chatId: selectedChat?._id,
+      //   message: text,
+      //   file: file,
+      // url,
+      // };
+      console.log(
+        "Data before calling sendMessage in chat section : ",
+        formData
+      );
+      const sendMessageResponse = await sendMessage(formData, token);
+      console.log("sendMessageResponse : ", sendMessageResponse);
+      socket.emit("new message", sendMessageResponse.data);
+    } catch (error) {
+      console.error("Send Chat Failed", error);
+    }
   };
 
-  // const user = {
-  //   name: "Soumya Bppimt",
-  //   image: "https://via.placeholder.com/150",
-  // };
-
-  // const users = getSender(user, selectedChat?.users);
-  // console.log("users : ", users);
-
-  console.log("name : ", name);
+  // console.log("messages : ", messages);
+  // console.log("url in chatSection : ", url);
+  // console.log("File in chatSection : ", file);
+  console.log("Notification : ", notification);
 
   return (
-    <div className="flex flex-col h-screen">
-      <ChatHeader user={selectedChat} name={name} />
-      <div className="flex-1 p-4 overflow-y-scroll">
-        {selectedChat?.users?.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} isSender={msg.isSender} />
-        ))}
-      </div>
-      <ChatInput onSendMessage={handleSendMessage} />
+    <div>
+      {selectedChat ? (
+        <>
+          <ChatHeader user={selectedChat} name={name} />
+
+          <div className="flex-1 overflow-y-auto p-4 pb-20">
+            {messages?.map((msg, i) => (
+              <ChatMessage
+                key={i}
+                message={msg}
+                isSender={msg?.sender?._id === user?._id}
+                isGroupChat={selectedChat?.isGroupChat}
+              />
+            ))}
+          </div>
+
+          <ChatInput onSendMessage={handleSendMessage} setFile={setFile} />
+        </>
+      ) : (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-2xl font-bold">Select a chat to start messaging</p>
+        </div>
+      )}
     </div>
   );
 };

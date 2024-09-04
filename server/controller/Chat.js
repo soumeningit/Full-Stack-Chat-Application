@@ -52,6 +52,8 @@ exports.searchUser = async (req, res) => {
 exports.createChat = async (req, res) => {
     try {
         // we can get login user id need other user id
+        // console.log("req.body : ", req?.body);
+        // console.log("req.user : ", req?.user);
         const { userId } = req.body;
         if (!userId) {
             return res.json({ success: false, message: "User id is required" })
@@ -114,7 +116,8 @@ exports.createChat = async (req, res) => {
                     select: "-password"
                 }
             })
-        console.log("Full Chat : ", fullChat);
+            .populte("lastMessage")
+        // console.log("Full Chat : ", fullChat);
 
         // return the chat
         return res.status(200).json({
@@ -152,7 +155,14 @@ exports.getChat = asyncHandler(async (req, res) => {
             })
             .sort({ updatedAt: -1 })
 
-        console.log("All Chats : ", allChats);
+
+        // allChats.forEach(chat => {
+        //     console.log(`Chat ID: ${chat._id}`);
+        //     console.log(`Last Message: ${chat.lastMessage}`);
+        // });
+
+        // console.log("All Chats in getChat Controller : ", allChats);
+
         return res.status(200)
             .json({
                 success: true,
@@ -188,12 +198,14 @@ exports.createGroupChat = asyncHandler(async (req, res) => {
                 });
         }
 
-        let users;
-        try {
-            users = JSON.parse(req.body.users);
-        } catch (error) {
-            return res.status(400).send({ message: "Invalid users format" });
-        }
+        let users = req?.body?.users;
+
+        // let users;
+        // try {
+        //     users = JSON.parse(req.body.users);
+        // } catch (error) {
+        //     return res.status(400).send({ message: "Invalid users format" });
+        // }
 
         if (users.length < 2) {
             return res.status(400)

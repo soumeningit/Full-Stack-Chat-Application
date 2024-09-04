@@ -167,11 +167,13 @@ exports.logIn = async (req, res) => {
                 // 4*24*60*60*1000 = 4 days
                 httpOnly: true // user can't change the cookie value
             }
+            let flag = true;
             res.cookie(name, value, options).status(200)
                 .json({
                     success: true,
                     message: "User logged in successfully",
                     token,
+                    flag,
                     user
                 })
 

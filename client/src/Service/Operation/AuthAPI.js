@@ -4,7 +4,12 @@ import { apiConnector } from "../apiConnector";
 import { setOtp } from "../../redux/Slices/AuthSlice";
 import { setToken } from "../../redux/Slices/AuthSlice";
 
-const { SENDOTP_API, SIGNUP_API, LOGIN_API } = authEndPoints;
+const {
+    SENDOTP_API,
+    SIGNUP_API, LOGIN_API,
+    RESETPASSTOKEN_API,
+    RESETPASSWORD_API,
+} = authEndPoints;
 
 
 export const otpSenderAPI = async (data, navigate) => {
@@ -84,3 +89,55 @@ export const login = async (data, dispatch) => {
     return result;
 
 }
+
+export function resetPassworedToken(email, setisemailSent) {
+    return async (dispatch) => {
+        try {
+            const response = await apiConnector("POST", RESETPASSTOKEN_API, {
+                email,
+            })
+            console.log("RESET PASSWORD TOKEN API RESPONSE : ", response)
+
+            if (!response.data.success) {
+                throw new Error(response.data.message)
+            }
+
+            toast.success("Reset password token sent to your email")
+            setisemailSent(true)
+            // navigate("/update-password")
+        }
+        catch (e) {
+            console.log("Reset Password generation failed!")
+            console.log("RESET PASSWORD TOKEN API ERROR : ", e)
+        }
+
+    }
+}
+
+export function resetPassword(password, confirmPassword, token) {
+    return async (dispatch) => {
+
+        console.log("Inside reset Password API....")
+        console.log("PASSWORD : ", password, " CONFIRM PASSWORD : ", confirmPassword, " TOKEN : ", token)
+
+        try {
+            const response = await apiConnector("POST", RESETPASSWORD_API, {
+                password, confirmPassword, token
+            });
+
+            if (!response.data.success) {
+                throw new Error(response.data.message)
+            }
+
+            console.log("Response : ", response);
+            toast.success("Password updated successfully")
+        }
+        catch (e) {
+            toast.error("Password Update Failed")
+            console.log("Reset Password generation failed!")
+            console.log("RESET PASSWORD TOKEN API ERROR : ", e)
+        }
+
+    }
+}
+

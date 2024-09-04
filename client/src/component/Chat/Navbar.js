@@ -58,7 +58,9 @@ function Navbar() {
     };
 
     return (
-        <nav className="bg-white h-14 shadow-md border-b border-gray-200 flex justify-between items-center px-4">
+
+        <nav className="bg-white h-14 shadow-md border-b border-gray-200 flex justify-between items-center px-4 sticky top-0 z-20">
+            {/* <nav className="bg-white h-14 shadow-md border-b border-gray-200 flex justify-between items-center px-4 sticky top-0 z-20"> */}
             <div className="flex items-center">
                 <button onClick={handleSearchClick} className="p-2 bg-blue-500 text-white rounded-md">
                     <FaSearch />
@@ -73,6 +75,7 @@ function Navbar() {
                 />
             </div>
         </nav>
+
     );
 }
 

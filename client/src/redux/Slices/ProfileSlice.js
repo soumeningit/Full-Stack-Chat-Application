@@ -6,7 +6,8 @@ const initialState = {
     view: false,
     searchResults: [],
     viewCreateGroup: false,
-    selectedChat: null
+    selectedChat: null,
+    notification: []
 }
 
 export const profileSlice = createSlice({
@@ -30,9 +31,12 @@ export const profileSlice = createSlice({
         },
         setSelectedChat: (state, action) => {
             state.selectedChat = action.payload
+        },
+        setNotification(state, action) {
+            state.notification = action.payload
         }
     }
 });
 
-export const { setUser, setLoading, setView, setSearchResults, setViewCreateGroup, setSelectedChat } = profileSlice.actions;
+export const { setUser, setLoading, setView, setSearchResults, setViewCreateGroup, setSelectedChat, setNotification } = profileSlice.actions;
 export default profileSlice.reducer;

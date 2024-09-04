@@ -153,7 +153,6 @@ const { cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const cookieParser = require("cookie-parser");
 const updateUserRoute = require("./Routes/UpdateUser");
-const path = require("path");
 
 dotenv.config();
 

@@ -54,7 +54,13 @@ exports.resetPasswordToken = async (req, res) => {
         );
         console.log("DETAILS", updatedDetails);
 
-        const url = `http://localhost:3000/update-password/${token}`;
+        const baseUrl = process.env.NODE_ENV === 'production'
+            ? "https://https://talk-time-vqvp.onrender.com"
+            : "http://localhost:3000";
+
+        const url = `${baseUrl}/update-password/${token}`;
+
+        // const url = `http://localhost:3000/update-password/${token}`;
 
         await mailSender(
             email,

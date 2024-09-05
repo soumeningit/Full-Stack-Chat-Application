@@ -135,12 +135,10 @@ exports.createChat = async (req, res) => {
     }
 }
 
-
-
-
 // Fetch all the chat for login user
 exports.getChat = asyncHandler(async (req, res) => {
     try {
+        console.log("All chat inside server....");
         const allChats = await Chat.find({ users: { $elemMatch: { $eq: req.user.id } } })
             .populate({
                 path: "users",

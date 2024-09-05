@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 exports.otpSender = async (req, res) => {
     try {
-
+        console.log("Insude otpsender inside server..");
         const { email, firstName } = req.body;
         if (!email || !firstName) {
             return res.status(400).json({ message: "Please enter all fields" })
@@ -56,6 +56,7 @@ exports.otpSender = async (req, res) => {
 
 exports.signUp = async (req, res) => {
     try {
+        console.log("Inside sign up controller..")
         console.log("req : ", req);
 
         const { email, password, confirmPassword, firstName, lastName, otp } = req.body;
@@ -123,6 +124,7 @@ exports.signUp = async (req, res) => {
 exports.logIn = async (req, res) => {
     console.log("Inside login controller..")
     try {
+        console.log("req.body : ", req?.body);
         // fetch email, Password
         const { email, password } = req.body;
         // check email, password is empty or not
@@ -145,6 +147,7 @@ exports.logIn = async (req, res) => {
         }
         // compare user send password and stored hash password
         const isMatchedPassword = await bcrypt.compare(password, user.password);
+        console.log("isMatchedPassword : ", isMatchedPassword)
         if (isMatchedPassword) {
             // if match then create jwt token
             const payload = {
@@ -153,7 +156,7 @@ exports.logIn = async (req, res) => {
             }
 
             const token = jwt.sign(payload, process.env.JWT_PRIVATEKEY, {
-                expiresIn: "2h"
+                expiresIn: "7d"
             });
 
             // user = user.toObject();

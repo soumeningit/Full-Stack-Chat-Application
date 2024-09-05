@@ -9,7 +9,11 @@ import io from "socket.io-client";
 import "./ChatSection.css";
 import { setNotification } from "../../redux/Slices/ProfileSlice";
 
-const ENDPOINT = "http://localhost:4000";
+// const ENDPOINT = "http://localhost:4001";
+const ENDPOINT =
+  process.env.NODE_ENV === "production"
+    ? "https://talk-time-vqvp.onrender.com/api" // Your production URL
+    : "http://localhost:4001"; // Local development URL
 let socket;
 
 const ChatSection = () => {

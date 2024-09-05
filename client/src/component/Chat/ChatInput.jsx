@@ -13,7 +13,11 @@ import { MdAttachFile } from "react-icons/md";
 import { useSelector } from "react-redux";
 import io from "socket.io-client";
 
-const ENDPOINT = "http://localhost:4000";
+// const ENDPOINT = "http://localhost:4000";
+const ENDPOINT =
+  process.env.NODE_ENV === "production"
+    ? "https://talk-time-vqvp.onrender.com/api" // Your production URL
+    : "http://localhost:4001"; // Local development URL
 let socket;
 
 const ChatInput = ({ onSendMessage, setFile }) => {

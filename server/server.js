@@ -171,9 +171,27 @@ app.use(
     })
 )
 
+// app.use(
+//     cors({
+//         origin: "http://localhost:3000",
+//         credentials: true,
+//     })
+// );
+// CORS configuration
+const allowedOrigins = [
+    "http://localhost:3000", // For local development
+    "https://talk-time-vqvp.onrender.com"  // For Render deployment
+];
+
 app.use(
     cors({
-        origin: "http://localhost:3000",
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
     })
 );
@@ -209,12 +227,22 @@ const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+// const io = require("socket.io")(server, {
+//     // pingTimeout: 600000, // 60000 milliseconds === 1 min
+//     cors: {
+//         origin: ["http://localhost:3000", "https://talk-time-vqvp.onrender.com"],
+//         credentials:true,
+//     },
+// });
+
+
+// Socket.io setup
 const io = require("socket.io")(server, {
-    // pingTimeout: 600000, // 60000 milliseconds === 1 min
     cors: {
-        origin: "http://localhost:3000",
+      origin: ["http://localhost:3000", "https://talk-time-vqvp.onrender.com"],
+      credentials: true,
     },
-});
+  });
 
 io.on("connection", (socket) => {
     console.log("Client connected to socket.io");

@@ -82,7 +82,7 @@ export const login = async (data, dispatch) => {
 
     } catch (error) {
         toast.error("LOG IN FAILED")
-        console.error("SIGN UP API CALLED FAILED.... " + error);
+        console.error("LOG IN API CALLED FAILED.... " + error);
     }
 
     toast.remove(toastId);

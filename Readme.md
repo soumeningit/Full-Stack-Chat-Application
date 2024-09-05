@@ -6,13 +6,15 @@ Talk-Time is a full stack chat application. Uses Socket.io for real time communi
 
 ## Technologies Used
 
-Client - React.js
-Server - Node.js,Express.js
-Database - MongoDB
+- Client - React.js
+- Server - Node.js,Express.js
+- Database - MongoDB
 
 ## LiveLink
 
-[![Link Icon](https://img.icons8.com/ios-filled/50/000000/link.png)](https://talk-time-vqvp.onrender.com)
+<a href="https://talk-time-vqvp.onrender.com">
+    <img src="https://img.icons8.com/ios-filled/50/000000/link.png" alt="Link Icon" width="30"/>
+</a>
 
 ## Made By
 

@@ -13,8 +13,8 @@ Talk-Time is a full stack chat application. Uses Socket.io for real time communi
 ## LiveLink
 
 <a href="https://talk-time-vqvp.onrender.com">
-    <img src="https://img.icons8.com/ios-filled/50/000000/link.png" alt="Link Icon" width="10" height="10"/>
-</a>
+    <img src="https://img.icons8.com/ios-filled/50/000000/link.png" alt="Link Icon" width="20" height="20"/>
+</a> [LiveLink](https://talk-time-vqvp.onrender.com)
 
 ## Made By
 

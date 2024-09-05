@@ -46,7 +46,10 @@ const ChatSection = () => {
   };
 
   useEffect(() => {
-    socket = io(ENDPOINT);
+    socket = io(ENDPOINT, {
+      transports: ["websocket"], // Force WebSocket transport
+      withCredentials: true, // Allow credentials to be sent with requests
+    });
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
   }, [user]);

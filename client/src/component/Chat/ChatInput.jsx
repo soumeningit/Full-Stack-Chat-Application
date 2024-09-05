@@ -77,7 +77,10 @@ const ChatInput = ({ onSendMessage, setFile }) => {
   };
 
   useEffect(() => {
-    socket = io(ENDPOINT);
+    socket = io(ENDPOINT, {
+      transports: ["websocket"], // Force WebSocket transport
+      withCredentials: true, // Allow credentials to be sent with requests
+    });
     socket.on("connect", () => {
       console.log("Connected to server");
       socket.emit("setup", user);

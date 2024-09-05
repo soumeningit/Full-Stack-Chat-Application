@@ -240,8 +240,8 @@ const server = app.listen(PORT, () => {
 const io = require("socket.io")(server, {
     cors: {
         origin: ["http://localhost:3000", "https://talk-time-vqvp.onrender.com"],
-        credentials: true,
         methods: ["GET", "POST"], // Allowed HTTP methods
+        credentials: true,
     },
 });
 

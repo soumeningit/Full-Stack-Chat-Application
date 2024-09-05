@@ -3,6 +3,9 @@ const bcrypt = require("bcrypt")
 const mailSender = require("../utils/mailSender")
 const crypto = require("crypto")
 const { passwordReset } = require("../mailTemplates/passwordReset")
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 // reset Pasword token
 exports.resetPasswordToken = async (req, res) => {

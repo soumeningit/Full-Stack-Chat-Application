@@ -12,7 +12,7 @@ import { setNotification } from "../../redux/Slices/ProfileSlice";
 // const ENDPOINT = "http://localhost:4001";
 const ENDPOINT =
   process.env.NODE_ENV === "production"
-    ? "https://talk-time-vqvp.onrender.com/api" // Your production URL
+    ? "https://talk-time-vqvp.onrender.com" // Your production URL
     : "http://localhost:4001"; // Local development URL
 let socket;
 

@@ -16,7 +16,7 @@ import io from "socket.io-client";
 // const ENDPOINT = "http://localhost:4000";
 const ENDPOINT =
   process.env.NODE_ENV === "production"
-    ? "https://talk-time-vqvp.onrender.com/api" // Your production URL
+    ? "https://talk-time-vqvp.onrender.com" // Your production URL
     : "http://localhost:4001"; // Local development URL
 let socket;
 
@@ -77,10 +77,12 @@ const ChatInput = ({ onSendMessage, setFile }) => {
   };
 
   useEffect(() => {
+    console.log("Socket Initialising");
     socket = io(ENDPOINT, {
       transports: ["websocket"], // Force WebSocket transport
       withCredentials: true, // Allow credentials to be sent with requests
     });
+    console.log("Socket Initialised");
     socket.on("connect", () => {
       console.log("Connected to server");
       socket.emit("setup", user);

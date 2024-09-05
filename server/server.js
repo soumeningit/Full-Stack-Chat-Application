@@ -239,10 +239,11 @@ const server = app.listen(PORT, () => {
 // Socket.io setup
 const io = require("socket.io")(server, {
     cors: {
-      origin: ["http://localhost:3000", "https://talk-time-vqvp.onrender.com"],
-      credentials: true,
+        origin: ["http://localhost:3000", "https://talk-time-vqvp.onrender.com"],
+        credentials: true,
+        methods: ["GET", "POST"], // Allowed HTTP methods
     },
-  });
+});
 
 io.on("connection", (socket) => {
     console.log("Client connected to socket.io");

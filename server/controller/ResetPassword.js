@@ -57,11 +57,14 @@ exports.resetPasswordToken = async (req, res) => {
         );
         console.log("DETAILS", updatedDetails);
 
-        const baseUrl = process.env.NODE_ENV === 'production'
-            ? "https://https://talk-time-vqvp.onrender.com"
-            : "http://localhost:3000";
+        // const baseUrl = process.env.NODE_ENV === 'production'
+        //     ? "https://https://talk-time-vqvp.onrender.com"
+        //     : "http://localhost:3000";
 
-        const url = `${baseUrl}/update-password/${token}`;
+        const url = process.env.NODE_ENV === "production"
+            ? `https://talk-time-vqvp.onrender.com/update-password/${token}`
+            : `http://localhost:3000/update-password/${token}`;
+        // const url = `${baseUrl}/update-password/${token}`;
 
         // const url = `http://localhost:3000/update-password/${token}`;
 

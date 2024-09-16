@@ -238,7 +238,7 @@ const server = app.listen(PORT, () => {
 
 // Socket.io setup
 const io = require("socket.io")(server, {
-    cors: {
+    cors: { // cross origin resource sharing
         origin: ["http://localhost:3000", "https://talk-time-vqvp.onrender.com"],
         methods: ["GET", "POST"], // Allowed HTTP methods https://talk-time-vqvp.onrender.com
         credentials: true,
